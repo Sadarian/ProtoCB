@@ -7,6 +7,12 @@ public class NetworkManagerScript : MonoBehaviour
     private float buttonWidth;
     private float buttonHeight;
 
+    private bool refreshing = false;
+
+    private HostData[] hostData;
+
+    private string gameName = "CastleBomba";
+
     public int incommingConnections = 32;
     public int port = 25001;
 
@@ -22,23 +28,46 @@ public class NetworkManagerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (refreshing)
+        {
+            if (MasterServer.PollHostList().Length > 0)
+            {
+                refreshing = false;
+                Debug.Log(MasterServer.PollHostList().Length);
+                hostData = MasterServer.PollHostList();
+            }
+        }
 
     }
 
     void StartServer()
     {
         Network.InitializeServer(incommingConnections, port, !Network.HavePublicAddress());
-        MasterServer.RegisterHost("CastleBomba", "SessionONE", "Awesome prototype");
+        MasterServer.RegisterHost(gameName, "SessionONE", "Awesome prototype");
+    }
+
+    void refreshHostList()
+    {
+        MasterServer.RequestHostList(gameName);
+        refreshing = true;
+    }
+
+    void OnPlayerConnected()
+    {
+        if (Network.isServer)
+        {
+            Application.LoadLevel(0);
+        }
     }
 
     void OnServerInitialized()
     {
         Debug.Log("Server initialized!");
+        Application.LoadLevel(0);
     }
 
     void OnMasterServerEvent(MasterServerEvent mse)
     {
-        Debug.Log("Things I do " + mse.ToString());
         if (mse == MasterServerEvent.RegistrationSucceeded)
         {
             Debug.Log("Registered Server");
@@ -47,16 +76,31 @@ public class NetworkManagerScript : MonoBehaviour
 
     void OnGUI()
     {
-        if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Start Server"))
+        if (!Network.isClient && !Network.isServer)
         {
-            Debug.Log("Starting Server");
-            StartServer();
+            if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Start Server"))
+            {
+                Debug.Log("Starting Server");
+                StartServer();
 
-        }
+            }
 
-        if (GUI.Button(new Rect(buttonX, buttonY * 1.2f + buttonHeight, buttonWidth, buttonHeight), "Refresh Host"))
-        {
-            Debug.Log("Refreshing");
+            if (GUI.Button(new Rect(buttonX, buttonY * 1.2f + buttonHeight, buttonWidth, buttonHeight), "Refresh Host"))
+            {
+                Debug.Log("Refreshing");
+                refreshHostList();
+            }
+
+            if (hostData != null)
+            {
+                for (int i = 0; i < hostData.Length; i++)
+                {
+                    if (GUI.Button(new Rect(buttonX * 1.5f + buttonWidth, buttonY * 1.2f + (buttonHeight * 1f), buttonWidth * 3f, buttonHeight * 0.5f), hostData[i].gameName))
+                    {
+                        Network.Connect(hostData[i]);
+                    }
+                }
+            }
         }
     }
 }
