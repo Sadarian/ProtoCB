@@ -53,17 +53,10 @@ public class NetworkManagerScript : MonoBehaviour
         refreshing = true;
     }
 
-    void OnPlayerConnected()
-    {
-        if (Network.isServer)
-        {
-        }
-    }
-
     void OnServerInitialized()
     {
         Debug.Log("Server initialized!");
-        serverInitialized = true;
+        networkView.RPC("setServerInitialized", RPCMode.AllBuffered);
     }
 
     void OnMasterServerEvent(MasterServerEvent mse)
@@ -72,6 +65,12 @@ public class NetworkManagerScript : MonoBehaviour
         {
             Debug.Log("Registered Server");
         }
+    }
+
+    [RPC]
+    void setServerInitialized()
+    {
+        serverInitialized = true;
     }
 
     void OnGUI()
