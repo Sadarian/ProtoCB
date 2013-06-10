@@ -8,3 +8,13 @@ C:\Users\anlicht\SkyDrive\Studium\4.4 Projektarbeit III\Prototyp 0.1\Temp\bin\De
 C:\Users\anlicht\SkyDrive\Studium\4.4 Projektarbeit III\Prototyp 0.1\obj\Debug\Assembly-CSharp-firstpass-vs.csprojResolveAssemblyReference.cache
 C:\Users\anlicht\SkyDrive\Studium\4.4 Projektarbeit III\Prototyp 0.1\obj\Debug\Assembly-CSharp-firstpass.dll
 C:\Users\anlicht\SkyDrive\Studium\4.4 Projektarbeit III\Prototyp 0.1\obj\Debug\Assembly-CSharp-firstpass.pdb
+D:\Projekte\ProtoCB\Temp\bin\Debug\Assembly-CSharp-firstpass.dll
+D:\Projekte\ProtoCB\Temp\bin\Debug\Assembly-CSharp-firstpass.pdb
+D:\Projekte\ProtoCB\Temp\bin\Debug\UnityEditor.dll
+D:\Projekte\ProtoCB\Temp\bin\Debug\UnityEngine.dll
+D:\Projekte\ProtoCB\Temp\bin\Debug\Mono.Cecil.dll
+D:\Projekte\ProtoCB\Temp\bin\Debug\nunit.framework.dll
+D:\Projekte\ProtoCB\Temp\bin\Debug\ICSharpCode.NRefactory.dll
+D:\Projekte\ProtoCB\obj\Debug\Assembly-CSharp-firstpass-vs.csprojResolveAssemblyReference.cache
+D:\Projekte\ProtoCB\obj\Debug\Assembly-CSharp-firstpass.dll
+D:\Projekte\ProtoCB\obj\Debug\Assembly-CSharp-firstpass.pdb

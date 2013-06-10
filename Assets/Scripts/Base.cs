@@ -9,6 +9,7 @@ public class Base : MonoBehaviour
     public bool myBase = false;
 
     private float lastSpawn = 0;
+    private GameObject[] bases;
 
     public bool haseOwener = false;
 
@@ -20,27 +21,30 @@ public class Base : MonoBehaviour
         currentPref = unitPref;
         globalControl = GameObject.FindGameObjectWithTag(Tags.gamecontroller).GetComponent<GameController>();
         transform.FindChild("pointlight").light.color = baseColor;
-        GameObject[] bases = GameObject.FindGameObjectsWithTag(Tags.basis);
-
-
-        if (this.gameObject == bases[0] && !bases[1].GetComponent<Base>().myBase)
-        {
-            myBase = true;
-            haseOwener = true;
-            SpawnUnit();
-        }
-        if (this.gameObject == bases[1] && !bases[0].GetComponent<Base>().myBase)
-        {
-            myBase = true;
-            haseOwener = true;
-            SpawnUnit();
-        }
+        bases = GameObject.FindGameObjectsWithTag(Tags.basis);
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (GameObject.FindGameObjectWithTag(Tags.networkManager).GetComponent<NetworkManagerScript>().serverInitialized
+            && (!bases[0].GetComponent<Base>().haseOwener || !bases[1].GetComponent<Base>().haseOwener))
+        {
+            if (this.gameObject == bases[0] && !bases[1].GetComponent<Base>().myBase && !haseOwener)
+            {
+                myBase = true;
+                networkView.RPC("setOwener", RPCMode.AllBuffered);
+                SpawnUnit();
+            }
+            if (this.gameObject == bases[1] && !bases[0].GetComponent<Base>().myBase && !haseOwener)
+            {
+                myBase = true;
+                networkView.RPC("setOwener", RPCMode.AllBuffered);
+                SpawnUnit();
+            }
+        }
+
         if (myBase && Input.GetButtonDown("ChangeUnit") && SpawningEnabled())
         {
             SpawnUnit();
@@ -48,6 +52,12 @@ public class Base : MonoBehaviour
         if (myBase)
             SwitchClass();
 
+    }
+
+    [RPC]
+    void setOwener()
+    {
+        haseOwener = true;
     }
 
     bool SpawningEnabled()

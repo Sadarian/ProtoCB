@@ -22,11 +22,10 @@ public class GameController : MonoBehaviour
     void Update()
     {
         if (Time.time > nextBombAt)
-            networkView.RPC("SpawnBomb", RPCMode.AllBuffered);
+            SpawnBomb();
 
     }
 
-    [RPC]
     public void SpawnBomb()
     {
         GameObject spawnPoint = GameObject.FindGameObjectWithTag(Tags.spawnPoint);

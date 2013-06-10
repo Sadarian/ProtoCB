@@ -10,11 +10,12 @@ public class NetworkManagerScript : MonoBehaviour
     private bool refreshing = false;
 
     private HostData[] hostData;
+    public bool serverInitialized = false;
 
     private string gameName = "CastleBomba";
 
     public int incommingConnections = 32;
-    public int port = 25001;
+    public int port = 25122;
 
     // Use this for initialization
     void Start()
@@ -56,14 +57,13 @@ public class NetworkManagerScript : MonoBehaviour
     {
         if (Network.isServer)
         {
-            Application.LoadLevel(0);
         }
     }
 
     void OnServerInitialized()
     {
         Debug.Log("Server initialized!");
-        Application.LoadLevel(0);
+        serverInitialized = true;
     }
 
     void OnMasterServerEvent(MasterServerEvent mse)
