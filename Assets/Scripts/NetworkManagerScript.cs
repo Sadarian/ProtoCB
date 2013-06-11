@@ -9,13 +9,15 @@ public class NetworkManagerScript : MonoBehaviour
 
     private bool refreshing = false;
 
-    private HostData[] hostData;
     public bool serverInitialized = false;
 
     private string gameName = "CastleBomba";
 
     public int incommingConnections = 32;
     public int port = 25122;
+
+
+    public string connectionIP = "127.0.0.1";
 
     // Use this for initialization
     void Start()
@@ -24,45 +26,12 @@ public class NetworkManagerScript : MonoBehaviour
         buttonY = Screen.height * 0.05f;
         buttonWidth = Screen.width * 0.1f;
         buttonHeight = Screen.width * 0.1f;
-
-        MasterServer.ipAddress = "172.21.66.8";
-        MasterServer.port = 23466;
-        Network.natFacilitatorIP = "172.21.66.8";
-        Network.natFacilitatorPort = 50005;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (refreshing)
-        {
-            if (MasterServer.PollHostList().Length > 0)
-            {
-                refreshing = false;
-                Debug.Log(MasterServer.PollHostList().Length);
-                hostData = MasterServer.PollHostList();
-            }
-        }
-
     }
 
     void StartServer()
     {
         Network.InitializeServer(incommingConnections, port, !Network.HavePublicAddress());
-        MasterServer.RegisterHost(gameName, "SessionONE", "Awesome prototype");
-    }
 
-    void refreshHostList()
-    {
-        MasterServer.RequestHostList(gameName);
-        refreshing = true;
-    }
-
-    void OnPlayerConnected()
-    {
-        if (Network.isServer)
-        {
-        }
     }
 
     void OnServerInitialized()
@@ -71,23 +40,17 @@ public class NetworkManagerScript : MonoBehaviour
         networkView.RPC("setServerInitialized", RPCMode.AllBuffered);
     }
 
-    void OnMasterServerEvent(MasterServerEvent mse)
-    {
-        if (mse == MasterServerEvent.RegistrationSucceeded)
-        {
-            Debug.Log("Registered Server");
-        }
-    }
-
     [RPC]
     void setServerInitialized()
     {
         serverInitialized = true;
     }
 
+
+
     void OnGUI()
     {
-        if (!Network.isClient && !Network.isServer)
+        if (Network.peerType == NetworkPeerType.Disconnected)
         {
             if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Start Server"))
             {
@@ -96,21 +59,26 @@ public class NetworkManagerScript : MonoBehaviour
 
             }
 
-            if (GUI.Button(new Rect(buttonX, buttonY * 1.2f + buttonHeight, buttonWidth, buttonHeight), "Refresh Host"))
+            if (GUI.Button(new Rect(buttonX, buttonY * 1.2f + buttonHeight, buttonWidth, buttonHeight), "Connect to Host"))
             {
                 Debug.Log("Refreshing");
-                refreshHostList();
+                Network.Connect(connectionIP, port);
             }
-
-            if (hostData != null)
+        }
+        else if (Network.peerType == NetworkPeerType.Client)
+        {
+            GUI.Label(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Status: Connected as Client");
+            if (GUI.Button(new Rect(buttonX, buttonY * 1.2f + buttonHeight, buttonWidth, buttonHeight), "Disconnect"))
             {
-                for (int i = 0; i < hostData.Length; i++)
-                {
-                    if (GUI.Button(new Rect(buttonX * 1.5f + buttonWidth, buttonY * 1.2f + (buttonHeight * 1f), buttonWidth * 3f, buttonHeight * 0.5f), hostData[i].gameName))
-                    {
-                        Network.Connect(hostData[i]);
-                    }
-                }
+                Network.Disconnect(200);
+            }
+        }
+        else if (Network.peerType == NetworkPeerType.Server)
+        {
+            GUI.Label(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "Status: Connected as Server");
+            if (GUI.Button(new Rect(buttonX, buttonY * 1.2f + buttonHeight, buttonWidth, buttonHeight), "Disconnect"))
+            {
+                Network.Disconnect(200);
             }
         }
     }
