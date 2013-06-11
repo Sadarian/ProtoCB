@@ -24,6 +24,11 @@ public class NetworkManagerScript : MonoBehaviour
         buttonY = Screen.height * 0.05f;
         buttonWidth = Screen.width * 0.1f;
         buttonHeight = Screen.width * 0.1f;
+
+        MasterServer.ipAddress = "172.21.66.8";
+        MasterServer.port = 23466;
+        Network.natFacilitatorIP = "172.21.66.8";
+        Network.natFacilitatorPort = 50005;
     }
 
     // Update is called once per frame
@@ -51,6 +56,13 @@ public class NetworkManagerScript : MonoBehaviour
     {
         MasterServer.RequestHostList(gameName);
         refreshing = true;
+    }
+
+    void OnPlayerConnected()
+    {
+        if (Network.isServer)
+        {
+        }
     }
 
     void OnServerInitialized()
